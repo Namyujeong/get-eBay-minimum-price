@@ -1,0 +1,69 @@
+function getEbayPrice(itemName) {
+    var apiKey = ‘your Ebay API Key’;
+    var categoryId = ‘123456’; // Gameboy category ID
+    var url = 'https://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByKeywords' +
+        '&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=' + apiKey + 
+        '&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&keywords=' + encodeURIComponent(itemName) + 
+        '&sortOrder=PricePlusShippingLowest&currencyId=USD&categoryId=' + categoryId;
+
+    var response = UrlFetchApp.fetch(url);
+    var json = JSON.parse(response.getContentText());
+
+    if (json && json.findItemsByKeywordsResponse && json.findItemsByKeywordsResponse[0] && 
+        json.findItemsByKeywordsResponse[0].searchResult && json.findItemsByKeywordsResponse[0].searchResult[0] && 
+        json.findItemsByKeywordsResponse[0].searchResult[0].item) {
+
+        var items = json.findItemsByKeywordsResponse[0].searchResult[0].item;
+        var bestMatch = null;
+        var bestDistance = Infinity;
+
+        for (var i = 0; i < items.length; i++) {
+            var currentItem = items[i];
+            if (currentItem && currentItem.title && Array.isArray(currentItem.title) && currentItem.title.length > 0) {
+                var currentTitle = currentItem.title[0];
+                if (typeof currentTitle === 'string' && currentTitle) {
+                    try {
+                        var distance = getLevenshteinDistance(itemName.toLowerCase(), currentTitle.toLowerCase());
+                        if (distance < bestDistance) {
+                            bestDistance = distance;
+                            bestMatch = currentItem;
+                        }
+                    } catch (e) {
+                        Logger.log("Error processing title: " + currentTitle + " - Error: " + e.message);
+                    }
+                }
+            } else {
+                Logger.log("Invalid or missing title for item: " + JSON.stringify(currentItem));
+            }
+        }
+
+        if (bestMatch && bestMatch.sellingStatus && bestMatch.sellingStatus[0] && bestMatch.sellingStatus[0].currentPrice && 
+            bestMatch.sellingStatus[0].currentPrice[0] && bestMatch.sellingStatus[0].currentPrice[0].__value__) {
+            return bestMatch.sellingStatus[0].currentPrice[0].__value__;
+        } else {
+            return "Price not available";
+        }
+    } else {
+        return "No items found";
+    }
+}
+
+function getLevenshteinDistance(a, b) {
+    var tmp;
+    if (a.length === 0) { return b.length; }
+    if (b.length === 0) { return a.length; }
+    if (a.length > b.length) { tmp = a; a = b; b = tmp; }
+
+    var i, j, res, alen = a.length, blen = b.length, row = Array(alen);
+    for (i = 0; i <= alen; i++) { row[i] = i; }
+
+    for (i = 1; i <= blen; i++) {
+        res = i;
+        for (j = 1; j <= alen; j++) {
+            tmp = row[j - 1];
+            row[j - 1] = res;
+            res = b[i - 1] === a[j - 1] ? tmp : Math.min(tmp + 1, Math.min(res + 1, row[j] + 1));
+        }
+    }
+    return res;
+}
