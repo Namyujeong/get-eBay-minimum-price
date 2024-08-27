@@ -35,7 +35,7 @@ In your Google Sheets, enter the formula:
 - You can also use a cell reference like `=getEbayPrice(A1)` where A1 contains the item name.
 
 ## License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
 ## Contributions
 Contributions are welcome! Please fork this repository, make your changes, and submit a pull request.
