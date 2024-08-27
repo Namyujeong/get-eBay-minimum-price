@@ -9,10 +9,10 @@ This Google Apps Script fetches the minimum price of a specified item from eBay 
 - **Flexible Pricing**: The script can be easily modified to fetch average or highest prices instead of the minimum.
 
 ## Installation
-Open Google Sheets and go to Extensions > Apps Script.
-Copy and paste the getEbayPrice script from this repository into the script editor.
-Save and close the script editor.
-Use the =getEbayPrice("item_name") function in any cell to fetch the minimum price from eBay.
+- Open Google Sheets and go to Extensions > Apps Script.
+- Copy and paste the getEbayPrice script from this repository into the script editor.
+- Save and close the script editor.
+- Use the =getEbayPrice("item_name") function in any cell to fetch the minimum price from eBay.
 
 ## Customization
 
@@ -31,8 +31,8 @@ In your Google Sheets, enter the formula:
 =getEbayPrice("Nintendo Gameboy")
 ```
 
-This will return the minimum price for the item from eBay.
-You can also use a cell reference like `=getEbayPrice(A1)` where A1 contains the item name.
+- This will return the minimum price for the item from eBay.
+- You can also use a cell reference like `=getEbayPrice(A1)` where A1 contains the item name.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
